@@ -1,0 +1,39 @@
+Subselector
+===========
+
+Adds subselects to the conditions hash on an ActiveRecord finder.
+
+Examples
+========
+
+Here are the current examples for a set of critics:
+
+  c = Critic.find(:all)
+  c.map { |c| [c.login, c.active] }   => [["reid", true], ["dewey", true], ["doug", false]]
+
+Subselect passed in as a string:
+
+  c = Critic.find(:all, :conditions => { :id => {:in => 'select id from critics where active = true' } })
+  c.map { |c| [c.login, c.active] }   => [["reid", true], ["dewey", true]]
+  
+Subselect as a hash and conditions as a string:
+
+  c = Critic.find(:all, :conditions => { :id => {:in => {:select => :id, :conditions => 'active = true' } } })
+  c.map { |c| [c.login, c.active] }   => [["reid", true], ["dewey", true]]
+
+Subselect as a hash:
+
+  c = Critic.find(:all, :conditions => { :id => {:in => {:select => :id, :conditions => {:active => false} } } })
+  c.map { |c| [c.login, c.active] }   => [["doug", false]]
+
+Subselect negated
+
+  c = Critic.find(:all, :conditions => { :id => {:not_in => {:select => :id, :conditions => {:active => true} } } })
+  c.map { |c| [c.login, c.active] }   => [["doug", false]]
+
+Subselect on a different model
+
+  c = Critic.find(:all, :conditions => { :id => {:in => {:model => :rankings, :select => :critic_id, :conditions => {:week => 39} } } })
+  c.map { |c| [c.login, c.active] }   => [["reid", true,], ["doug", false]]
+
+Copyright (c) 2008 Los Angeles Times, released under the MIT license
