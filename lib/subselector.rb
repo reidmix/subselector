@@ -13,7 +13,8 @@ ActiveRecord::Base.class_eval do
       end
       
       def extract_subselect_model!(subselect)        
-        subselect.delete(:model).to_s.classify.constantize rescue self
+        subselect.is_a?(Hash) and subselect.has_key?(:model) ? 
+          subselect.delete(:model).to_s.classify.constantize : self
       end
 
       def attribute_condition_with_subselect(argument)
