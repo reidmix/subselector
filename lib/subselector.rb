@@ -12,7 +12,7 @@ ActiveRecord::Base.class_eval do
         (value.respond_to?(:keys) and (value.keys & SUBSELECT_SQL.keys).first) || nil
       end
       
-      RAISE_ON_NIL = proc { raise 'nil'}
+      RAISE_ON_NIL = proc { raise 'nil' }
       def extract_subselect_model!(subselect)        
         subselect.delete(:model, &RAISE_ON_NIL).to_s.classify.constantize rescue self
       end

@@ -100,12 +100,4 @@ class SubselectorTest < Test::Unit::TestCase
     c = Critic.find(:all, :conditions => { :id => {:not_equal => {:select => :id, :conditions => {:active => false} } } })
     assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }
   end
-
-  # TODO: this should be throwing an error
-  # "Subquery returns more than 1 row"
-  # perhaps sqlite only looks at the first row whereas mysql barfs?
-  def test_equal_subquery_with_multiple_rows
-    c = Critic.find(:all, :conditions => { :id => {:equal => {:select => :id} } })
-  end
-
 end
