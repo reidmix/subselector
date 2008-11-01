@@ -110,4 +110,33 @@ class SubselectorTest < Test::Unit::TestCase
     assert_equal Nominee, Critic.send(:extract_subselect_model!, {:model => :nominee})
   end
 
+  # get_subselect_key test
+  
+  [:in, :not_in, :equal, :not_equal].each do |key|
+    define_method("test_getting_#{key}_subselect_key") do
+      assert_equal Critic.send(:get_subselect_key, {key => :test}), key
+    end
+  end
+  
+  def test_getting_nil_for_unmatched_subselect_key
+    assert_nil Critic.send(:get_subselect_key, {:foo => :test})
+  end
+
+  def test_getting_first_key_for_multiple_subselect_keys
+    assert_equal Critic.send(:get_subselect_key, {:in => :test, :equal => :test}), :in
+  end
+
+  def test_getting_first_key_for_multiple_subselect_keys
+    assert_equal Critic.send(:get_subselect_key, {:in => :test, :equal => :test}), :in
+  end
+  
+  class Duck; def keys; [:in] end end
+  def test_getting_subselect_key_for_a_duck    
+    assert_equal Critic.send(:get_subselect_key, Duck.new), :in    
+  end
+
+  def test_getting_nil_for_a_nonsensical_subselect
+    assert_nil Critic.send(:get_subselect_key, "foo")
+    assert_nil Critic.send(:get_subselect_key, [:in])
+  end
 end
