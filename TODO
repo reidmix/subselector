@@ -1,0 +1,2 @@
+* See if we can get subselector to work with the array form of conditions.
+* Determine if scopes break with subselector
