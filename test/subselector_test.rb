@@ -95,4 +95,19 @@ class SubselectorTest < Test::Unit::TestCase
     c = Critic.find(:all, :conditions => { :id => {:not_equal => {:select => :id, :conditions => {:active => false} } } })
     assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }
   end
+
+  # extract_subselect_model! tests
+  
+  def test_extract_subselect_model_string
+    assert_equal Critic, Critic.send(:extract_subselect_model!, "this is a string")
+  end
+
+  def test_extract_subselect_model_hash_without_model
+    assert_equal Critic, Critic.send(:extract_subselect_model!, {:no_model => :yeah})
+  end
+
+  def test_extract_subselect_model_hash_with_model
+    assert_equal Nominee, Critic.send(:extract_subselect_model!, {:model => :nominee})
+  end
+
 end
