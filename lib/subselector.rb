@@ -12,9 +12,9 @@ ActiveRecord::Base.class_eval do
         (value.is_a?(Hash) and (value.keys & SUBSELECT_SQL.keys).first) || nil
       end
       
+      RAISE_ON_NIL = proc { raise 'nil'}
       def extract_subselect_model!(subselect)        
-        subselect.is_a?(Hash) and subselect.has_key?(:model) ? 
-          subselect.delete(:model).to_s.classify.constantize : self
+        subselect.delete(:model, &RAISE_ON_NIL).to_s.classify.constantize rescue self
       end
 
       def attribute_condition_with_subselect(argument)
