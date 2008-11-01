@@ -9,7 +9,7 @@ ActiveRecord::Base.class_eval do
       }
 
       def get_subselect_key(value)
-        (value.is_a?(Hash) and (value.keys & SUBSELECT_SQL.keys).first) || nil
+        (value.respond_to?(:keys) and (value.keys & SUBSELECT_SQL.keys).first) || nil
       end
       
       RAISE_ON_NIL = proc { raise 'nil'}
