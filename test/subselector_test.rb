@@ -55,16 +55,11 @@ def setup_fixtures
   RANKINGS.each { |values| Ranking.new(values).save! }
 end
 
+# only need to set up once
+setup_db
+setup_fixtures
+
 class SubselectorTest < Test::Unit::TestCase
-
-  def setup
-    setup_db
-    setup_fixtures
-  end
-
-  def teardown
-    teardown_db
-  end
 
   def test_same_table_string_subquery
     c = Critic.find(:all, :conditions => { :id => {:in => 'select id from critics where active = "t"' } })
