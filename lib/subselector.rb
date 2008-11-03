@@ -26,15 +26,14 @@ ActiveRecord::Base.class_eval do
       alias_method_chain :attribute_condition, :subselect    
 
       def quote_bound_value_with_subselect(value)
-        if key = get_subselect_key(value)
-          subselect = value[key]
-          model = extract_subselect_model!(subselect)
-          subselect.kind_of?(String) ? subselect : model.send(:construct_finder_sql, subselect)
-        elsif value.kind_of?(Hash)
-          model = extract_subselect_model!(value)
-          model.send(:construct_finder_sql, value)
+        key = get_subselect_key(value)
+        subselect = key ? value[key] : value
+        model = extract_subselect_model!(subselect)
+
+        if subselect.kind_of?(Hash)
+          model.send(:construct_finder_sql, subselect)
         else
-          quote_bound_value_without_subselect(value)
+          key ? subselect : quote_bound_value_without_subselect(value)
         end
       end
       alias_method_chain :quote_bound_value, :subselect

@@ -61,6 +61,13 @@ setup_fixtures
 
 class SubselectorTest < Test::Unit::TestCase
 
+  # verify
+  
+  def test_conditions_with_string_unchanged
+    c = Critic.find(:all, :conditions => ['active = ?', 't'])
+    assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }  
+  end
+
   # subselect in array conditions
   
   def test_same_table_hash_subquery_with_string_conditions_in_array_conditions
