@@ -1,2 +1,3 @@
-* See if we can get subselector to work with the array form of conditions.
+* See if we can get subselector to work with the array form of conditions - does this make sense?
 * Determine if scopes break with subselector
+* Can we get it to work with aggregates (max, count, etc.)?
