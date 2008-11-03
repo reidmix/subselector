@@ -1,4 +1,4 @@
-# /usr/local/bin/ruby -Ilib:test "/usr/local/lib/ruby/gems/1.8/gems/rake-0.8.1/lib/rake/rake_test_loader.rb" test/subselector_test.rb
+#!/usr/local/bin/ruby -Ilib:test "/usr/local/lib/ruby/gems/1.8/gems/rake-0.8.1/lib/rake/rake_test_loader.rb" test/subselector_test.rb
 $:.unshift "#{File.dirname(__FILE__)}/.."
 require 'test/unit'
 
