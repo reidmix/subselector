@@ -61,37 +61,71 @@ setup_fixtures
 
 class SubselectorTest < Test::Unit::TestCase
 
-  def test_same_table_string_subquery
+  # subselect in array conditions
+  
+  def test_same_table_hash_subquery_with_string_conditions_in_array_conditions
+    c = Critic.find(:all, :conditions => ['id in (?)', {:select => :id, :conditions => 'active = "t"' }])
+    assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }
+  end
+  
+  def test_same_table_hash_subquery_in_array_conditions
+    c = Critic.find(:all, :conditions => ['id in (?)', {:select => :id, :conditions => {:active => false} }])
+    assert_equal [["doug", false]], c.map { |c| [c.login, c.active] }
+  end
+
+  def test_same_table_hash_subquery_negated_in_array_conditions
+    c = Critic.find(:all, :conditions => ['id not in (?)', {:select => :id, :conditions => {:active => true} }])
+    assert_equal [["doug", false]], c.map { |c| [c.login, c.active] }
+  end
+
+  def test_different_model_hash_subquery_in_array_conditions
+    c = Critic.find(:all, :conditions => ['id in (?)', {:model => :rankings, :select => :critic_id, :conditions => {:week => 39} }])
+    assert_equal [["reid", true], ["doug", false]], c.map { |c| [c.login, c.active] }
+  end
+
+  def test_equal_subquery_in_array_conditions
+    c = Critic.find(:all, :conditions => ['id = ?', {:select => :id, :conditions => {:active => false} }])
+    assert_equal [["doug", false]], c.map { |c| [c.login, c.active] }
+  end
+
+  def test_not_equal_subquery_in_array_conditions
+    c = Critic.find(:all, :conditions => ['id != ?', {:select => :id, :conditions => {:active => false} }])
+    assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }
+  end
+  
+  # subselect in hash conditions
+
+  def test_same_table_string_subquery_in_hash_conditions
     c = Critic.find(:all, :conditions => { :id => {:in => 'select id from critics where active = "t"' } })
     assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }
   end
 
-  def test_same_table_hash_subquery_with_string_conditions
+  def test_same_table_hash_subquery_with_string_conditions_in_hash_conditions
     c = Critic.find(:all, :conditions => { :id => {:in => {:select => :id, :conditions => 'active = "t"' } } })
     assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }
   end
 
-  def test_same_table_hash_subquery
+  def test_same_table_hash_subquery_in_hash_conditions
     c = Critic.find(:all, :conditions => { :id => {:in => {:select => :id, :conditions => {:active => false} } } })
     assert_equal [["doug", false]], c.map { |c| [c.login, c.active] }
   end
 
-  def test_same_table_hash_subquery_negated
+  def test_same_table_hash_subquery_negated_in_hash_conditions
     c = Critic.find(:all, :conditions => { :id => {:not_in => {:select => :id, :conditions => {:active => true} } } })
     assert_equal [["doug", false]], c.map { |c| [c.login, c.active] }
   end
 
-  def test_different_model_hash_subquery
+  def test_different_model_hash_subquery_in_hash_conditions
     c = Critic.find(:all, :conditions => { :id => {:in => {:model => :rankings, :select => :critic_id, :conditions => {:week => 39} } } })
     assert_equal [["reid", true], ["doug", false]], c.map { |c| [c.login, c.active] }
   end
   
-  def test_equal_subquery
+  def test_equal_subquery_in_hash_conditions
     c = Critic.find(:all, :conditions => { :id => {:equal => {:select => :id, :conditions => {:active => false} } } })
     assert_equal [["doug", false]], c.map { |c| [c.login, c.active] }
   end
 
-  def test_not_equal_subquery
+  def test_not_equal_subquery_in_hash_conditions
     c = Critic.find(:all, :conditions => { :id => {:not_equal => {:select => :id, :conditions => {:active => false} } } })
     assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }
   end
@@ -123,11 +157,11 @@ class SubselectorTest < Test::Unit::TestCase
   end
 
   def test_getting_first_key_for_multiple_subselect_keys
-    assert_equal Critic.send(:get_subselect_key, {:in => :test, :equal => :test}), :in
+    assert_include Critic.send(:get_subselect_key, {:in => :test, :equal => :test}), [:in, :equal]
   end
 
   def test_getting_first_key_for_multiple_subselect_keys
-    assert_equal Critic.send(:get_subselect_key, {:in => :test, :equal => :test}), :in
+    assert_include Critic.send(:get_subselect_key, {:in => :test, :equal => :test}), [:in, :equal]
   end
   
   class Duck; def keys; [:in] end end
@@ -139,4 +173,9 @@ class SubselectorTest < Test::Unit::TestCase
     assert_nil Critic.send(:get_subselect_key, "foo")
     assert_nil Critic.send(:get_subselect_key, [:in])
   end
+
+  private
+    def assert_include(element, enumeration, message=nil)
+      assert enumeration.include?(element), message
+    end
 end
