@@ -68,6 +68,11 @@ class SubselectorTest < Test::Unit::TestCase
     assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }  
   end
 
+  def test_conditsions_with_named_bind_variables_unchanged
+    c = Critic.find(:all, :conditions => ['active = :active', {:active => true}])
+    assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }
+  end
+  
   # subselect in array conditions
   
   def test_same_table_hash_subquery_with_string_conditions_in_array_conditions
@@ -98,6 +103,11 @@ class SubselectorTest < Test::Unit::TestCase
   def test_not_equal_subquery_in_array_conditions
     c = Critic.find(:all, :conditions => ['id != (?)', {:select => :id, :conditions => {:active => false} }])
     assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }
+  end
+  
+  def test_same_table_hash_subquery_with_named_bind_variables
+    c = Critic.find(:all, :conditions => ['id in (:subselect)', {:subselect => {:select => :id, :conditions => {:active => false} } }])
+    assert_equal [["doug", false]], c.map { |c| [c.login, c.active] }
   end
   
   # subselect in hash conditions
