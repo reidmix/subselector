@@ -84,12 +84,12 @@ class SubselectorTest < Test::Unit::TestCase
   end
 
   def test_equal_subquery_in_array_conditions
-    c = Critic.find(:all, :conditions => ['id = ?', {:select => :id, :conditions => {:active => false} }])
+    c = Critic.find(:all, :conditions => ['id = (?)', {:select => :id, :conditions => {:active => false} }])
     assert_equal [["doug", false]], c.map { |c| [c.login, c.active] }
   end
 
   def test_not_equal_subquery_in_array_conditions
-    c = Critic.find(:all, :conditions => ['id != ?', {:select => :id, :conditions => {:active => false} }])
+    c = Critic.find(:all, :conditions => ['id != (?)', {:select => :id, :conditions => {:active => false} }])
     assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }
   end
   

@@ -30,6 +30,9 @@ ActiveRecord::Base.class_eval do
           subselect = value[key]
           model = extract_subselect_model!(subselect)
           subselect.kind_of?(String) ? subselect : model.send(:construct_finder_sql, subselect)
+        elsif value.kind_of?(Hash)
+          model = extract_subselect_model!(value)
+          model.send(:construct_finder_sql, value)
         else
           quote_bound_value_without_subselect(value)
         end
