@@ -5,9 +5,9 @@ Adds subselects to the conditions hash on an +ActiveRecord+ finder.
 == Description
 
 For a column in which you wish to perform a subselect, pass a hash indicating what kind of subselect with a 
-key that must be one of the following: +:in+, +:not_in+, +:equals+, +:not_equals+.  
+key that must be one of the following: :+in+, :+not_in+, :+equals+, :+not_equals+.  
 
-Use +:equals+ and +:not_equals+ for subselects that return one row.  Use +:in+ and +:not_in+ for more than one row.
+Use :+equals+ and :+not_equals+ for subselects that return one row.  Use :+in+ and :+not_in+ for more than one row.
 
 The value of this key can be another hash that you would pass to the model's finder, remember to set :select to 
 constrain the results to one column.  This hash can be as simple or complex as any options passed to find in 
