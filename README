@@ -1,16 +1,13 @@
-Subselector
-===========
+= Subselector
 
-Adds subselects to the conditions hash on an ActiveRecord finder.
+Adds subselects to the conditions hash on an +ActiveRecord+ finder.
 
-Description
-===========
+== Description
 
-Currently this only works for the Hash form of conditions within an ActiveRecord finder.  For a column in which
-you wish to perform a subselect, pass a hash indicating what kind of subselect with a key that must be one of the
-following: :in, :not_in, :equals, :not_equals.  
+For a column in which you wish to perform a subselect, pass a hash indicating what kind of subselect with a 
+key that must be one of the following: +:in+, +:not_in+, +:equals+, +:not_equals+.  
 
-Use :equals and :not_equals for subselects that return one row.  Use :in and :not_in for more than one row.
+Use +:equals+ and +:not_equals+ for subselects that return one row.  Use +:in+ and +:not_in+ for more than one row.
 
 The value of this key can be another hash that you would pass to the model's finder, remember to set :select to 
 constrain the results to one column.  This hash can be as simple or complex as any options passed to find in 
@@ -19,8 +16,10 @@ specify the table name with the :model key on which you wish to perform the subs
 
 You can also pass a string if you wish to construct the subselect query yourself.
 
-Examples
-========
+If you are using conditions in array form, specify the type of subselect in the string and pass just the subselect
+hash as the bind variable.
+
+== Examples
 
 Here are the current examples for a set of critics:
 
@@ -45,13 +44,13 @@ Subselect as a hash:
   #=> select * from critics where id in (select id from critics where active = false)
   c.map { |c| [c.login, c.active] }   #=> [["doug", false]]
 
-Subselect negated
+Subselect negated:
 
   c = Critic.find(:all, :conditions => { :id => {:not_in => {:select => :id, :conditions => {:active => true} } } })
   #=> select * from critics where id not in (select id from critics where active = true)
   c.map { |c| [c.login, c.active] }   #=> [["doug", false]]
 
-Subselect on a different model
+Subselect on a different model:
 
   c = Critic.find(:all, :conditions => { :id => {:in => {:model => :rankings, :select => :critic_id, :conditions => {:week => 39} } } })
   #=> select * from critics where id in (select critic_id from rankings where week = 39)
