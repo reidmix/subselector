@@ -52,7 +52,8 @@ Subselect negated:
 
 Subselect on a different model:
 
-  c = Critic.find(:all, :conditions => { :id => {:in => {:model => :rankings, :select => :critic_id, :conditions => {:week => 39} } } })
+  c = Critic.find(:all, :conditions => { :id => {:in => 
+      {:model => :rankings, :select => :critic_id, :conditions => {:week => 39} } } })
   #=> select * from critics where id in (select critic_id from rankings where week = 39)
   c.map { |c| [c.login, c.active] }   #=> [["reid", true,], ["doug", false]]
 
@@ -64,7 +65,8 @@ Subselect with array conditons:
  
 You can specify the model in this form too:
 
- c = Critic.find(:all, :conditions => ['id in (?)', {:model => :rankings, :select => :critic_id, :conditions => {:week => 39} }]) 
+ c = Critic.find(:all, :conditions => ['id in (?)', 
+    {:model => :rankings, :select => :critic_id, :conditions => {:week => 39} }]) 
  #=> select * from critics where id in (select critic_id from rankings where week = 39)
  c.map { |c| [c.login, c.active] }   #=> [["reid", true,], ["doug", false]]
 
