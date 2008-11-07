@@ -57,4 +57,22 @@ Subselect on a different model
   #=> select * from critics where id in (select critic_id from rankings where week = 39)
   c.map { |c| [c.login, c.active] }   #=> [["reid", true,], ["doug", false]]
 
+Subselect with array conditons:
+
+ c = Critic.find(:all, :conditions => ['id in (?)', {:select => :id, :conditions => 'active = true' }])  
+ #=> select * from critics where id in (select id from critics where active = true)
+ c.map { |c| [c.login, c.active] }   #=> [["reid", true], ["dewey", true]]
+ 
+You can specify the model in this form too:
+
+ c = Critic.find(:all, :conditions => ['id in (?)', {:model => :rankings, :select => :critic_id, :conditions => {:week => 39} }]) 
+ #=> select * from critics where id in (select critic_id from rankings where week = 39)
+ c.map { |c| [c.login, c.active] }   #=> [["reid", true,], ["doug", false]]
+
+You can even use named bind variables:
+
+  c = Critic.find(:all, :conditions => ['id not in (:foo)', {:foo => {:select => :id, :conditions => {:active => false} } }])  
+  #=> select * from critics where id not in (select id from critics where active = false)
+  c.map { |c| [c.login, c.active] }   #=> [["reid", true], ["dewey", true]]
+   
 Copyright (c) 2008 Los Angeles Times, released under the MIT license
