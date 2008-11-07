@@ -1,6 +1,6 @@
 = Subselector
 
-Adds subselects to the conditions hash on an +ActiveRecord+ finder.
+Adds subselects to the conditions of an +ActiveRecord+ finder.
 
 == Description
 
