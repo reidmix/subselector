@@ -31,7 +31,11 @@ ActiveRecord::Base.class_eval do
         model = extract_subselect_model!(subselect)
 
         if subselect.kind_of?(Hash)
-          model.send(:construct_finder_sql, subselect)
+          if operation = subselect.delete(:operation)
+            model.send(:construct_calculation_sql, operation, subselect[:select], subselect)
+          else
+            model.send(:construct_finder_sql, subselect)
+          end
         else
           key ? subselect : quote_bound_value_without_subselect(value)
         end

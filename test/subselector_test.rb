@@ -19,7 +19,7 @@ def setup_db
     create_table :rankings do |t|
       t.column "critic_id", :integer
       t.column "nominee_id", :integer
-      t.column "order", :integer
+      t.column "rank_order", :integer
       t.column "week", :integer
     end
     create_table :nominees do |t|
@@ -45,9 +45,9 @@ CRITICS = [
 ]
 
 RANKINGS = [
-  { :critic_id => 1, :nominee_id => 1, :order => 1, :week => 39 }, 
-  { :critic_id => 1, :nominee_id => 2, :order => 2, :week => 39 },
-  { :critic_id => 3, :nominee_id => 1, :order => 2, :week => 39 }
+  { :critic_id => 1, :nominee_id => 1, :rank_order => 1, :week => 39 }, 
+  { :critic_id => 1, :nominee_id => 2, :rank_order => 2, :week => 39 },
+  { :critic_id => 3, :nominee_id => 1, :rank_order => 2, :week => 39 }
 ]
 
 def setup_fixtures
@@ -145,6 +145,18 @@ class SubselectorTest < Test::Unit::TestCase
   def test_not_equal_subquery_in_hash_conditions
     c = Critic.find(:all, :conditions => { :id => {:not_equal => {:select => :id, :conditions => {:active => false} } } })
     assert_equal [["reid", true], ["dewey", true]], c.map { |c| [c.login, c.active] }
+  end
+
+  # subselect with calculations
+
+  def test_simple_min_calculation
+    r = Ranking.find(:all, :conditions => {:rank_order => {:in => {:select => :rank_order, :operation => :min}}})
+    assert_equal [1], r.map(&:rank_order)
+  end
+
+  def test_simple_max_calculation
+    c = Critic.find(:all, :conditions => ['login in (?)', {:select => :login, :operation => :max}])
+    assert_equal [["reid", true]], c.map { |c| [c.login, c.active] }
   end
 
   # extract_subselect_model! tests
