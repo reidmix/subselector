@@ -75,5 +75,12 @@ You can even use named bind variables:
   c = Critic.find(:all, :conditions => ['id not in (:foo)', {:foo => {:select => :id, :conditions => {:active => false} } }])  
   #=> select * from critics where id not in (select id from critics where active = false)
   c.map { |c| [c.login, c.active] }   #=> [["reid", true], ["dewey", true]]
+
+Calculations are also allowed:
+
+  c = Critic.find(:all, :conditions => { :id => {:in => {:select => :id, :calculation => :min} } })
+  #=> select * from critics where id in (select min(critics.id) from critics)
+  c.map { |c| [c.login, c.active] }   #=> [["reid", true]]
+
    
 Copyright (c) 2008 Los Angeles Times, released under the MIT license
